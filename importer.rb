@@ -78,20 +78,22 @@ files = Dir.glob('data/pmc/*.xml')
 files.each do |file|
   puts "Processing #{file}"
 
-  xmls = open(file).read.lines.slice_before(/<!DOCTYPE/).to_a.map do |parts|
-    parts.join
-  end
-  pb = ProgressBar.create(format: '%a %B %e %t', title: 'XML', total: xmls.size)
-
-  xmls.each do |xml|
-    begin
-      importer = Importer.new(xml)
-      importer.extract
-      importer.import
-    rescue => e
-      puts "Something went wrong: #{e.message}"
+  File.open(file) do |f|
+    xmls = f.read.lines.slice_before(/<!DOCTYPE/).to_a.map do |parts|
+      parts.join
     end
-    pb.increment
+    pb = ProgressBar.create(format: '%a %B %e %t', title: 'XML', total: xmls.size)
+
+    xmls.each do |xml|
+      begin
+        importer = Importer.new(xml)
+        importer.extract
+        importer.import
+      rescue => e
+        puts "Something went wrong: #{e.message}"
+      end
+      pb.increment
+    end
+    pb.finish
   end
-  pb.finish
 end
