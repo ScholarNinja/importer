@@ -16,7 +16,7 @@ class Cayley
       predicate: predicate,
       object: object,
     }].to_json
-
+    puts "Writing: #{subject} -> #{predicate} -> #{object}"
     RestClient.post @path + 'write', body, content_type: :json
   end
 end
