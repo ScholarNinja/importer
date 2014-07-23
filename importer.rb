@@ -116,7 +116,7 @@ class Importer
     if @links.empty?
       puts "No links in #{@doi}"
     end
-    @links.each do |link|
+    @links.map! do |link|
       # To skip objects like: 10.1107/S1600536814011209/rk2427Isup2.hkl
       next if link[:object] =~ /.*\/.*\/.*sup.*/
 
@@ -126,8 +126,9 @@ class Importer
         Importer.paper_count += 1
       end
 
-      @cayley.write(@doi, link[:predicate], link[:object])
-    end
+      [@doi, link[:predicate], link[:object]]
+    end.compact!
+    @cayley.write(@links)
   end
 end
 
